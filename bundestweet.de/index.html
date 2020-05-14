@@ -1,240 +1,196 @@
 <html>
-	<head>
-    <title>Bundestweet</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
-    <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
-    <meta name="theme-color" content="#ffffff">
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="Bundestweet">
-    <meta property="og:description" content="Tweets von Bundestagsabgeordneten">
-    <meta property="og:image" content="https://bundestweet.de/apple-touch-icon.png">
-    <meta property="og:url" content="https://bundestweet.de">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="og:site_name" content="Bundestweet">
-    <meta name="twitter:image:alt" content="Bundestag">
-<style>
 
-#imprint {
-position: absolute;
-  right: 10px;
-  top:0px;
-  border: 1px solid black;
-  border-radius: 0 0 5px 5px;
-  border-top: none;
-  padding: 3px;
-  font-family: sans-serif;
-  font-size: xx-small;
-}
+<head>
+  <title>Bundestweet</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta property="og:title" content="Bundestweet">
+  <meta property="og:description" content="Tweets von Bundestagsabgeordneten">
+  <meta property="og:image" content="https://bundestweet.de/apple-touch-icon.png">
+  <meta property="og:url" content="https://bundestweet.de">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:site_name" content="Bundestweet">
+  <meta name="twitter:image:alt" content="Bundestag">
+  <style>
+    #imprint {
+      position: absolute;
+      right: 10px;
+      top: 0px;
+      border: 1px solid black;
+      border-radius: 0 0 5px 5px;
+      border-top: none;
+      padding: 3px;
+      font-family: sans-serif;
+      font-size: xx-small;
+    }
 
-.parentbody {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  align-items: center;
-}
+    #grid {
+      max-width: 2000px;
+    }
 
-blockquote.twitter-tweet {
-  flex-grow: 1;
-  font-family: "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 16px;
-  margin: 10px 10px 10px 10px;
-  animation: fadeIn ease 3s;
-  -webkit-animation: fadeIn ease 3s;
-  -moz-animation: fadeIn ease 3s;
-  -o-animation: fadeIn ease 3s;
-  -ms-animation: fadeIn ease 3s;
-}
+    .grid-item {
+      width: 25%;
+    }
 
-blockquote.twitter-tweet {
-  flex-basis: 300px;
-  max-width:500px;
-  min-width:200px;
-}
+    @media (max-width: 1500px) {
+      .grid-item {
+        width: 33.3%;
+      }
+    }
 
-@media (max-height: 900px) {
-  blockquote.twitter-tweet {
-    flex-basis: 225px;
-  }
-}
+    @media (max-width: 1000px) {
+      .grid-item {
+        width: 50%;
+      }
+    }
 
-@keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
+    @media (max-width: 500px) {
+      .grid-item {
+        width: 100%;
+      }
+    }
 
-@-moz-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
+    .grid-item twitter-widget {
+      width: 95% !important;
+    }
+  </style>
 
-@-webkit-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
+</head>
 
-@-o-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
+<body>
+  <div id="grid">
+  </div>
+  <div id="imprint"><a href="about.html" style="text-decoration:none">Über / Impressum / Datenschutzerklärung</a></div>
+</body>
 
-@-ms-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-}
-
-blockquote.twitter-tweet p {
-  font-size: 16px;
-  font-weight: normal;
-  line-height: 20px;
-}
-
-blockquote.twitter-tweet a {
-  color: inherit;
-  font-weight: normal;
-  text-decoration: none;
-  outline: 0 none;
-}
-
-blockquote.twitter-tweet a:hover,
-blockquote.twitter-tweet a:focus {
-  text-decoration: underline;
-}
-</style>
+<script src="isotope.pkgd.min.js"></script>
 <script>
+  let grid = document.getElementById("grid")
+  var msnry = new Isotope('#grid', {
+    itemSelector: '.grid-item',
+    percentPosition: true,
+  });
+  alreadyDone = [];
+  toDo = [];
+  lastModified = "";
+  renderingJob = "";
+  reloadCounter = 0;
+  window.twttr = (function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0],
+      t = window.twttr || {};
+    if (d.getElementById(id)) return t;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js, fjs);
+    t._e = [];
+    t.ready = function (f) {
+      t._e.push(f);
+    };
+    return t;
+  }(document, "script", "twitter-wjs"));
 
-alreadyDone=[];
-toDo=[];
-lastModified="";
-renderingJob = "";
-reloadCounter = 0;
-window.twttr = (function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};
-  if (d.getElementById(id)) return t;
-  js = d.createElement(s);
-  js.id = id;
-  js.src = "https://platform.twitter.com/widgets.js";
-  fjs.parentNode.insertBefore(js, fjs);
-  t._e = [];
-  t.ready = function(f) {
-    t._e.push(f);
-  };
-  return t;
-}(document, "script", "twitter-wjs"));
-
-window.twttr.ready(
-  function (twttr) {
-    twttr.events.bind(
-      'rendered',
-      function (event) {
-        console.log("Created widget", event.target.id);
-        if(reloadCounter === 1){
-          document.body.appendChild(event.target.parentElement);
-        } else {
-          document.body.insertBefore(event.target.parentElement,document.body.firstChild);
+  window.twttr.ready(
+    function (twttr) {
+      twttr.events.bind(
+        'rendered',
+        function (event) {
+          console.log("Created widget", event.target.id);
+          if (reloadCounter === 1) {
+            grid.appendChild(event.target.parentElement);
+          } else {
+            grid.insertBefore(event.target.parentElement, grid.firstChild);
+          }
+          msnry.appended(event.target.parentElement);
+          msnry.layout();
         }
-      }
-    );
-  }
-);
+      );
+    }
+  );
 
 
-function getTweets() {
-  var client = new XMLHttpRequest();
-  client.open('GET', 'tweets');
-  if(lastModified && lastModified !== ""){
-    console.log("Setting modified since header:"+lastModified);
-    client.setRequestHeader("If-Modified-Since", lastModified);
-  }
-  client.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      lastModified=client.getResponseHeader("Last-Modified");
-      console.log("Got response, last Modified:"+lastModified);
-      var newtweets = client.responseText.split(",");
-      toDo = newtweets.filter(function(value, index, arr){ 
-        return alreadyDone.indexOf(value) == -1 && value && value.trim().length > 0;
-      });
-      if(toDo.length){
-        reloadCounter++;
-        if(reloadCounter === 1) {
-          toDo.reverse();
+  function getTweets() {
+    var client = new XMLHttpRequest();
+    client.open('GET', 'tweets');
+    if (lastModified && lastModified !== "") {
+      console.log("Setting modified since header:" + lastModified);
+      client.setRequestHeader("If-Modified-Since", lastModified);
+    }
+    client.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        lastModified = client.getResponseHeader("Last-Modified");
+        console.log("Got response, last Modified:" + lastModified);
+        var newtweets = client.responseText.split(",");
+        toDo = newtweets.filter(function (value, index, arr) {
+          return alreadyDone.indexOf(value) == -1 && value && value.trim().length > 0;
+        });
+        if (toDo.length) {
+          reloadCounter++;
+          if (reloadCounter === 1) {
+            toDo.reverse();
+          }
+          clearInterval(renderingJob);
+          console.log("New tweets. Starting update timer");
+          renderingJob = setInterval(update, 100);
         }
-        clearInterval(renderingJob);
-        console.log("New tweets. Starting update timer");
-        renderingJob =  setInterval(update,100);
+      } else {
+        console.log("Status:" + this.status);
       }
-    }else{
-      console.log("Status:"+this.status);
+    }
+    client.send();
+  }
+
+  function addTweet(tweetid) {
+    var newDiv = document.createElement("div");
+    newDiv.id = tweetid;
+    newDiv.classList.add("grid-item");
+    window.twttr.widgets.createTweet(tweetid, newDiv, {
+      align: 'left',
+      conversation: 'none'
+    });
+  }
+
+  function update() {
+    if (toDo.length) {
+      var element = toDo.shift();
+      alreadyDone.push(element);
+      var existingElement = document.getElementById(element);
+      if (existingElement == null) {
+        console.log("Found new tweet id:" + element + ". Rendering!")
+        addTweet(element);
+      }
+    } else {
+      console.log("Nothing to do, stopping update timer");
+      clearInterval(renderingJob);
     }
   }
-  client.send();
-}
 
-function addTweet(tweetid) {
-  var newDiv = document.createElement("blockquote");
-  newDiv.id = tweetid;
-  newDiv.classList.add("twitter-tweet");
-  window.twttr.widgets.createTweet(tweetid,newDiv,{align: 'left', conversation:'none'}); 
-}
-
-function update() {
-  if(toDo.length){
-    var element = toDo.shift();
-    alreadyDone.push(element);
-    var existingElement = document.getElementById(element);
-    if(existingElement == null){
-      console.log("Found new tweet id:"+element+". Rendering!")
-      addTweet(element);
+  function cookiequestion() {
+    if (document.cookie === "cookie=true" || window.confirm(
+        "Cookie Nutzung\nIhr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.\nBestätigen Sie, wenn Sie einverstanden sind."
+      )) {
+      document.cookie = "cookie=true";
+    } else {
+      document.cookie = "cookie=";
+      return cookiequestion();
     }
-  }else{
-    console.log("Nothing to do, stopping update timer");
-    clearInterval(renderingJob);
   }
-}
 
-function cookiequestion() {
-  if(document.cookie === "cookie=true" || window.confirm("Cookie Nutzung\nIhr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.\nBestätigen Sie, wenn Sie einverstanden sind.")) {
-    document.cookie = "cookie=true";              
-  }else{
-    document.cookie = "cookie=";
-    return cookiequestion();
+  window.onload = function () {
+    cookiequestion();
+    getTweets();
+    setInterval(function () {
+      console.log("Checking for new tweets");
+      getTweets();
+    }, 20000);
   }
-}
-
-window.onload = function () {
-  cookiequestion();
-  getTweets();      
-  setInterval(function(){ console.log("Checking for new tweets");getTweets(); },20000);
-}
-
 </script>
-	</head>
-	<body class="parentbody">
-          <div id="imprint"><a href="about.html" style="text-decoration:none">Über / Impressum / Datenschutzerklärung</a></div>
-	</body>
+
 </html>
