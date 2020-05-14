@@ -218,7 +218,7 @@ function update() {
 }
 
 function cookiequestion() {
-  if(document.cookie === "cookie=true" || window.confirm("Cookie Nutzung\nIhr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.\nBestätigen Sie wenn Sie einverstanden sind.")) {
+  if(document.cookie === "cookie=true" || window.confirm("Cookie Nutzung\nIhr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.\nBestätigen Sie, wenn Sie einverstanden sind.")) {
     document.cookie = "cookie=true";              
   }else{
     document.cookie = "cookie=";
