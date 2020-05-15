@@ -16,6 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:title" content="Bundestweet">
     <meta property="og:description" content="Tweets von Bundestagsabgeordneten">
+    <meta name="description" content="Tweets von Bundestagsabgeordneten">
     <meta property="og:image" content="https://bundestweet.de/apple-touch-icon.png">
     <meta property="og:url" content="https://bundestweet.de">
     <meta name="twitter:card" content="summary_large_image">
@@ -112,7 +113,7 @@ function addTweet(tweetid, classname) {
   var newDiv = document.createElement("blockquote");
   newDiv.id = tweetid;
   newDiv.classList.add("twitter-tweet",classname);
-  window.twttr.widgets.createTweet(tweetid,newDiv,{align: 'left', conversation:'none'}); 
+  window.twttr.widgets.createTweet(tweetid,newDiv,{align: 'left', conversation:'none', dnt:'true'}); 
 }
 
 function update() {
