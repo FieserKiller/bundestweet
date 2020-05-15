@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 	<head>
     <title>Bundestweet</title>
@@ -260,7 +261,6 @@ function checkIfTweetsReceived() {
   if(weReceivedATweet !== true  && alreadyDone.length > 0) {
     setModalTextsBlocked();
     MicroModal.show('modal-1',{
-      onClose: modal => checkIfTweetsReceived(),
       disableScroll: false,
       disableFocus: false,
       awaitOpenAnimation: true,
