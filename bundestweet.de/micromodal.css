@@ -58,6 +58,10 @@
   color: rgba(0,0,0,.8);
 }
 
+.modal__content a {
+  text-decoration: none;
+}
+
 .modal__btn {
   font-size: .875rem;
   padding-left: 1rem;

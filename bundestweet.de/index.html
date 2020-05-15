@@ -135,6 +135,7 @@ toDo=[];
 lastModified="";
 renderingJob = "";
 reloadCounter = 0;
+weReceivedATweet = false;
 window.twttr = (function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};
   if (d.getElementById(id)) return t;
@@ -155,8 +156,9 @@ window.twttr.ready(
       'rendered',
       function (event) {
         console.log("Created widget", event.target.id);
+        weReceivedATweet = true;
         if(reloadCounter === 1){
-          document.body.appendChild(event.target.parentElement);
+          document.body.insertBefore(event.target.parentElement,document.getElementById("modal-1"));
         } else {
           document.body.insertBefore(event.target.parentElement,document.body.firstChild);
         }
@@ -221,10 +223,11 @@ function update() {
 
 function cookiequestion() {
   if(document.cookie !== "cookie=true" ) {
+    setModalTextsCookie();
     MicroModal.show('modal-1',{
       onClose: modal => saveCookieStartPage(), 
       disableScroll: false, 
-      disableFocus: false, 
+      disableFocus: true, 
       awaitOpenAnimation: true,
       awaitCloseAnimation: true,
       debugMode: false 
@@ -238,6 +241,33 @@ function saveCookieStartPage() {
   document.cookie = "cookie=true"; 
   getTweets();      
   setInterval(function(){ console.log("Checking for new tweets");getTweets(); },20000);
+  setTimeout(function(){ checkIfTweetsReceived(); },5000);
+}
+
+function setModalTextsCookie() {
+  document.getElementById("modal-1-title").innerHTML = "Cookie Nutzung";
+  document.getElementById("modal-1-content").innerHTML = "<p>Ihr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.</p><p>Alle Details kann man in der <a href='about.html#Datenschutz'>Datenschutzerklärung</a> nachlesen.</p>";
+  document.getElementById("modal-1-buttontext").innerHTML = "Einverstanden";
+}
+
+function setModalTextsBlocked() {
+  document.getElementById("modal-1-title").innerHTML = "Twitter antwortet nicht";
+  document.getElementById("modal-1-content").innerHTML = "<p>Wir erhalten keine Tweets. Das kann nur bedeuten, dass Twitter von Ihrem Browser oder Ihrer Firewall blockiert wird.</p><p>Hier wird sich nichts tun bis Twitter wieder erreichbar ist.</p>";
+  document.getElementById("modal-1-buttontext").innerHTML = "Verstanden";
+}
+
+function checkIfTweetsReceived() {
+  if(weReceivedATweet !== true  && alreadyDone.length > 0) {
+    setModalTextsBlocked();
+    MicroModal.show('modal-1',{
+      onClose: modal => checkIfTweetsReceived(),
+      disableScroll: false,
+      disableFocus: false,
+      awaitOpenAnimation: true,
+      awaitCloseAnimation: true,
+      debugMode: false
+    });
+  }
 }
 
 window.onload = function () {
@@ -247,23 +277,21 @@ window.onload = function () {
 </script>
 	</head>
 	<body class="parentbody">
+    <noscript>
+            <p>Ihr Browser unterstützt kein JavaScript - ohne funktioniert die Seite leider nicht.</p>
+    </noscript>
     <div id="imprint"><a href="about.html" style="text-decoration:none">Über / Impressum / Datenschutzerklärung</a></div>
     <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
     <div class="modal__overlay" tabindex="-1" >
       <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
         <header class="modal__header">
           <h2 class="modal__title" id="modal-1-title">
-            Cookie Nutzung
           </h2>
         </header>
         <main class="modal__content" id="modal-1-content">
-          <p>
-            Ihr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.
-            <p>Alle Details kann man in der <a href="about.html#Datenschutz">Datenschutzerklärung</a> nachlesen.</p>
-          </p>
         </main>
         <footer class="modal__footer">
-          <button class="modal__btn modal__btn-primary" data-micromodal-close>Einverstanden</button>
+          <button class="modal__btn modal__btn-primary" data-micromodal-close id="modal-1-buttontext"></button>
         </footer>
       </div>
     </div>
