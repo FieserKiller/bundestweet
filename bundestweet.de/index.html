@@ -3,6 +3,7 @@
 	<head>
     <title>Bundestweet</title>
     <link rel="stylesheet" type="text/css" href="micromodal.css">
+    <link rel="stylesheet" type="text/css" href="bundestweet.css">
     <script src="micromodal.min.js"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
@@ -20,123 +21,16 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta property="og:site_name" content="Bundestweet">
     <meta name="twitter:image:alt" content="Bundestag">
-<style>
-
-#imprint {
-position: absolute;
-  right: 10px;
-  top:0px;
-  border: 1px solid black;
-  border-radius: 0 0 5px 5px;
-  border-top: none;
-  padding: 3px;
-  font-family: sans-serif;
-  font-size: xx-small;
-}
-
-.parentbody {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  align-items: center;
-  margin: 0px;
-}
-
-blockquote.twitter-tweet {
-  flex-grow: 1;
-  font-family: "Helvetica Neue", Roboto, "Segoe UI", Calibri, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 16px;
-  margin: 10px 10px 10px 10px;
-  animation: fadeIn ease 3s;
-  -webkit-animation: fadeIn ease 3s;
-  -moz-animation: fadeIn ease 3s;
-  -o-animation: fadeIn ease 3s;
-  -ms-animation: fadeIn ease 3s;
-}
-
-blockquote.twitter-tweet {
-  flex-basis: 300px;
-  max-width:500px;
-  min-width:200px;
-}
-
-@media (max-height: 900px) {
-  blockquote.twitter-tweet {
-    flex-basis: 225px;
-  }
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
-
-@-moz-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
-
-@-webkit-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
-
-@-o-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-  }
-}
-
-@-ms-keyframes fadeIn {
-  0% {
-    opacity:0;
-  }
-  100% {
-    opacity:1;
-}
-
-blockquote.twitter-tweet p {
-  font-size: 16px;
-  font-weight: normal;
-  line-height: 20px;
-}
-
-blockquote.twitter-tweet a {
-  color: inherit;
-  font-weight: normal;
-  text-decoration: none;
-  outline: 0 none;
-}
-
-blockquote.twitter-tweet a:hover,
-blockquote.twitter-tweet a:focus {
-  text-decoration: underline;
-}
-</style>
 <script>
 alreadyDone=[];
 toDo=[];
+initialLoad=[];
 lastModified="";
 renderingJob = "";
+renderingBackJob = "";
 reloadCounter = 0;
 weReceivedATweet = false;
+lastElementFromBackjob = null;
 window.twttr = (function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};
   if (d.getElementById(id)) return t;
@@ -158,16 +52,25 @@ window.twttr.ready(
       function (event) {
         console.log("Created widget", event.target.id);
         weReceivedATweet = true;
-        if(reloadCounter === 1){
-          document.body.insertBefore(event.target.parentElement,document.getElementById("modal-1"));
-        } else {
+        if(event.target.parentElement.classList.contains("front")){
           document.body.insertBefore(event.target.parentElement,document.body.firstChild);
+        } else {
+          document.body.insertBefore(event.target.parentElement,document.getElementById("modal-1"));
+          if(distanceFromViewport(event.target.parentElement) > 5000){
+            clearInterval(renderingBackJob);
+            lastElementFromBackjob = event.target.parentElement;
+            console.log("Stopped backjob. Distance from viewport:"+distanceFromViewport(event.target.parentElement));
+          }
         }
       }
     );
   }
 );
 
+function distanceFromViewport(elem) {
+	var distance = elem.getBoundingClientRect();
+	return distance.top - (window.innerHeight || document.documentElement.clientHeight);
+};
 
 function getTweets() {
   var client = new XMLHttpRequest();
@@ -181,18 +84,23 @@ function getTweets() {
       lastModified=client.getResponseHeader("Last-Modified");
       console.log("Got response, last Modified:"+lastModified);
       var newtweets = client.responseText.split(",");
-      toDo = newtweets.filter(function(value, index, arr){ 
-        return alreadyDone.indexOf(value) == -1 && value && value.trim().length > 0;
-      });
-      if(toDo.length){
-        reloadCounter++;
-        if(reloadCounter === 1) {
-          toDo.reverse();
+      if(reloadCounter === 0){
+        initialLoad = newtweets;
+        initialLoad.reverse();
+        clearInterval(renderingBackJob);
+        console.log("New tweets for back. Starting update timer");
+        renderingBackJob =  setInterval(updateBack,100);
+      }else{
+        toDo = newtweets.filter(function(value, index, arr){ 
+          return value && value.trim().length > 0 && alreadyDone.indexOf(value) == -1 && initialLoad.indexOf(value) == -1;
+        });
+        if(toDo.length){
+          clearInterval(renderingJob);
+          console.log("New tweets. Starting update timer");
+          renderingJob =  setInterval(update,100);
         }
-        clearInterval(renderingJob);
-        console.log("New tweets. Starting update timer");
-        renderingJob =  setInterval(update,100);
       }
+      reloadCounter++;
     }else{
       console.log("Status:"+this.status);
     }
@@ -200,10 +108,10 @@ function getTweets() {
   client.send();
 }
 
-function addTweet(tweetid) {
+function addTweet(tweetid, classname) {
   var newDiv = document.createElement("blockquote");
   newDiv.id = tweetid;
-  newDiv.classList.add("twitter-tweet");
+  newDiv.classList.add("twitter-tweet",classname);
   window.twttr.widgets.createTweet(tweetid,newDiv,{align: 'left', conversation:'none'}); 
 }
 
@@ -213,12 +121,27 @@ function update() {
     alreadyDone.push(element);
     var existingElement = document.getElementById(element);
     if(existingElement == null){
-      console.log("Found new tweet id:"+element+". Rendering!")
-      addTweet(element);
+      console.log("Found new tweet id:"+element+" to put into the front. Rendering!")
+      addTweet(element,"front");
     }
   }else{
     console.log("Nothing to do, stopping update timer");
     clearInterval(renderingJob);
+  }
+}
+
+function updateBack() {
+  if(initialLoad.length){
+    var element = initialLoad.shift();
+    alreadyDone.push(element);
+    var existingElement = document.getElementById(element);
+    if(existingElement == null){
+      console.log("Found new tweet id:"+element+" to put into the back. Rendering!")
+      addTweet(element, "back");
+    }
+  }else{
+    console.log("Nothing to do, stopping update timer");
+    clearInterval(renderingBackJob);
   }
 }
 
@@ -269,6 +192,14 @@ function checkIfTweetsReceived() {
     });
   }
 }
+
+window.onscroll = function() {
+  if(lastElementFromBackjob && distanceFromViewport(lastElementFromBackjob) <= 5000) {
+    clearInterval(renderingBackJob);
+    console.log("We need more backtweets. Starting update timer");
+    renderingBackJob = setInterval(updateBack,100);  
+  }
+};
 
 window.onload = function () {
   cookiequestion();
