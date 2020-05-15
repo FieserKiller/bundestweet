@@ -3,7 +3,6 @@
 <head>
   <title>Bundestweet</title>
   <link rel="stylesheet" type="text/css" href="micromodal.css">
-  <script src="micromodal.min.js"></script>
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -75,9 +74,30 @@
   <div id="grid">
   </div>
   <div id="imprint"><a href="about.html" style="text-decoration:none">Über / Impressum / Datenschutzerklärung</a></div>
+    <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
+    <div class="modal__overlay" tabindex="-1" >
+      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+        <header class="modal__header">
+          <h2 class="modal__title" id="modal-1-title">
+            Cookie Nutzung
+          </h2>
+        </header>
+        <main class="modal__content" id="modal-1-content">
+          <p>
+            Ihr Browser wird auf dieser Seite intensiv mit Twitter kommunizieren und entsprechende Cookies austauschen, auf die wir keinen Einfluss haben. Wir selbst tracken nicht.
+            <p>Alle Details kann man in der <a href="about.html#Datenschutz">Datenschutzerklärung</a> nachlesen.</p>
+          </p>
+        </main>
+        <footer class="modal__footer">
+          <button class="modal__btn modal__btn-primary" data-micromodal-close>Einverstanden</button>
+        </footer>
+      </div>
+    </div>
+  </div>
 </body>
 
 <script src="isotope.pkgd.min.js"></script>
+<script src="micromodal.min.js"></script>
 <script>
   let grid = document.getElementById("grid")
   var msnry = new Isotope('#grid', {
