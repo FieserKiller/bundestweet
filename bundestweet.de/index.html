@@ -22,7 +22,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta property="og:site_name" content="Bundestweet">
     <meta name="twitter:image:alt" content="Bundestag">
-<script>
+<script type="application/javascript">
 alreadyDone=[];
 toDo=[];
 initialLoad=[];
@@ -51,16 +51,14 @@ window.twttr.ready(
     twttr.events.bind(
       'rendered',
       function (event) {
-        console.log("Created widget", event.target.id);
         weReceivedATweet = true;
         if(event.target.parentElement.classList.contains("front")){
           document.body.insertBefore(event.target.parentElement,document.body.firstChild);
         } else {
           document.body.insertBefore(event.target.parentElement,document.getElementById("modal-1"));
-          if(distanceFromViewport(event.target.parentElement) > 5000){
+          if(distanceFromViewport(event.target.parentElement) > 3000){
             clearInterval(renderingBackJob);
             lastElementFromBackjob = event.target.parentElement;
-            console.log("Stopped backjob. Distance from viewport:"+distanceFromViewport(event.target.parentElement));
           }
         }
       }
@@ -77,19 +75,16 @@ function getTweets() {
   var client = new XMLHttpRequest();
   client.open('GET', 'tweets');
   if(lastModified && lastModified !== ""){
-    console.log("Setting modified since header:"+lastModified);
     client.setRequestHeader("If-Modified-Since", lastModified);
   }
   client.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       lastModified=client.getResponseHeader("Last-Modified");
-      console.log("Got response, last Modified:"+lastModified);
       var newtweets = client.responseText.split(",");
       if(reloadCounter === 0){
         initialLoad = newtweets;
         initialLoad.reverse();
         clearInterval(renderingBackJob);
-        console.log("New tweets for back. Starting update timer");
         renderingBackJob =  setInterval(updateBack,100);
       }else{
         toDo = newtweets.filter(function(value, index, arr){ 
@@ -97,13 +92,10 @@ function getTweets() {
         });
         if(toDo.length){
           clearInterval(renderingJob);
-          console.log("New tweets. Starting update timer");
           renderingJob =  setInterval(update,100);
         }
       }
       reloadCounter++;
-    }else{
-      console.log("Status:"+this.status);
     }
   }
   client.send();
@@ -122,11 +114,9 @@ function update() {
     alreadyDone.push(element);
     var existingElement = document.getElementById(element);
     if(existingElement == null){
-      console.log("Found new tweet id:"+element+" to put into the front. Rendering!")
       addTweet(element,"front");
     }
   }else{
-    console.log("Nothing to do, stopping update timer");
     clearInterval(renderingJob);
   }
 }
@@ -137,11 +127,9 @@ function updateBack() {
     alreadyDone.push(element);
     var existingElement = document.getElementById(element);
     if(existingElement == null){
-      console.log("Found new tweet id:"+element+" to put into the back. Rendering!")
       addTweet(element, "back");
     }
   }else{
-    console.log("Nothing to do, stopping update timer");
     clearInterval(renderingBackJob);
   }
 }
@@ -165,7 +153,7 @@ function cookiequestion() {
 function saveCookieStartPage() {
   document.cookie = "cookie=true"; 
   getTweets();      
-  setInterval(function(){ console.log("Checking for new tweets");getTweets(); },20000);
+  setInterval(function(){ getTweets(); },20000);
   setTimeout(function(){ checkIfTweetsReceived(); },5000);
 }
 
@@ -177,7 +165,7 @@ function setModalTextsCookie() {
 
 function setModalTextsBlocked() {
   document.getElementById("modal-1-title").innerHTML = "Twitter antwortet nicht";
-  document.getElementById("modal-1-content").innerHTML = "<p>Wir erhalten keine Tweets. Das kann nur bedeuten, dass Twitter von Ihrem Browser oder Ihrer Firewall blockiert wird.</p><p>Hier wird sich nichts tun bis Twitter wieder erreichbar ist.</p>";
+  document.getElementById("modal-1-content").innerHTML = "<p>Wir erhalten keine Tweets. Das kann nur bedeuten, dass Twitter von Ihrem Browser oder Firewall blockiert wird oder Ihr Browser nicht mehr aktuell ist.</p><p>Hier wird sich nichts tun bis Twitter erreichbar ist.</p>";
   document.getElementById("modal-1-buttontext").innerHTML = "Verstanden";
 }
 
@@ -197,7 +185,6 @@ function checkIfTweetsReceived() {
 window.onscroll = function() {
   if(lastElementFromBackjob && distanceFromViewport(lastElementFromBackjob) <= 5000) {
     clearInterval(renderingBackJob);
-    console.log("We need more backtweets. Starting update timer");
     renderingBackJob = setInterval(updateBack,100);  
   }
 };
