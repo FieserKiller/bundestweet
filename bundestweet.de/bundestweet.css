@@ -35,7 +35,7 @@ blockquote.twitter-tweet {
 blockquote.twitter-tweet {
   flex-basis: 300px;
   max-width:500px;
-  min-width:200px;
+  min-width:280px;
 }
 
 @media (max-height: 900px) {

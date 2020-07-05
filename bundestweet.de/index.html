@@ -22,7 +22,27 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta property="og:site_name" content="Bundestweet">
     <meta name="twitter:image:alt" content="Bundestag">
-<script type="application/javascript">
+	</head>
+	<body class="parentbody">
+    <noscript>
+            <p>Ihr Browser unterstützt kein JavaScript - ohne funktioniert die Seite leider nicht.</p>
+    </noscript>
+    <div id="imprint"><a href="about.html" style="text-decoration:none">Über / Impressum / Datenschutzerklärung</a></div>
+    <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
+      <div class="modal__overlay" tabindex="-1" >
+        <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+          <header class="modal__header">
+            <h2 class="modal__title" id="modal-1-title"></h2>
+          </header>
+          <main class="modal__content" id="modal-1-content"></main>
+          <footer class="modal__footer">
+            <button class="modal__btn modal__btn-primary" data-micromodal-close id="modal-1-buttontext"></button>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <div id="hidden" style="position:absolute;left:5000px;"></div>
+<script >
 alreadyDone=[];
 toDo=[];
 initialLoad=[];
@@ -41,6 +61,7 @@ window.twttr = (function(d, s, id) {
   fjs.parentNode.insertBefore(js, fjs);
   t._e = [];
   t.ready = function(f) {
+    console.log("Twitter ready");
     t._e.push(f);
   };
   return t;
@@ -48,21 +69,28 @@ window.twttr = (function(d, s, id) {
 
 window.twttr.ready(
   function (twttr) {
+  console.log("Registering");
     twttr.events.bind(
       'rendered',
       function (event) {
         weReceivedATweet = true;
         if(event.target.parentElement.classList.contains("front")){
           document.body.insertBefore(event.target.parentElement,document.body.firstChild);
+          clearInterval(renderingJob);
+          renderingJob =  setInterval(update,10);
         } else {
           document.body.insertBefore(event.target.parentElement,document.getElementById("modal-1"));
-          if(distanceFromViewport(event.target.parentElement) > 3000){
+          if(distanceFromViewport(event.target.parentElement) > 1000){
             clearInterval(renderingBackJob);
             lastElementFromBackjob = event.target.parentElement;
+          } else {
+            clearInterval(renderingBackJob);
+            renderingBackJob =  setInterval(updateBack,10);
           }
         }
       }
     );
+  console.log("Registered");
   }
 );
 
@@ -85,14 +113,14 @@ function getTweets() {
         initialLoad = newtweets;
         initialLoad.reverse();
         clearInterval(renderingBackJob);
-        renderingBackJob =  setInterval(updateBack,100);
+        renderingBackJob =  setInterval(updateBack,10);
       }else{
         toDo = newtweets.filter(function(value, index, arr){ 
           return value && value.trim().length > 0 && alreadyDone.indexOf(value) == -1 && initialLoad.indexOf(value) == -1;
         });
         if(toDo.length){
           clearInterval(renderingJob);
-          renderingJob =  setInterval(update,100);
+          renderingJob =  setInterval(update,10);
         }
       }
       reloadCounter++;
@@ -102,10 +130,23 @@ function getTweets() {
 }
 
 function addTweet(tweetid, classname) {
+  console.log("Twweid:"+tweetid);
   var newDiv = document.createElement("blockquote");
   newDiv.id = tweetid;
   newDiv.classList.add("twitter-tweet",classname);
-  window.twttr.widgets.createTweet(tweetid,newDiv,{align: 'left', conversation:'none', dnt:'true'}); 
+  document.getElementById("hidden").appendChild(newDiv);
+  twttr.widgets.createTweet(tweetid,newDiv,{align: 'left', conversation:'none', dnt:'true'})
+  .then(function (el) {
+    if(!el){
+      document.getElementById("hidden").removeChild(newDiv);
+      console.log("Tweet id removed because no tweet found:"+tweetid);
+      clearInterval(renderingBackJob);
+      renderingBackJob =  setInterval(updateBack,10);
+
+    } else {
+      console.log("Tweet displayed:"+el);
+    }
+  });
 }
 
 function update() {
@@ -115,6 +156,7 @@ function update() {
     var existingElement = document.getElementById(element);
     if(existingElement == null){
       addTweet(element,"front");
+      clearInterval(renderingJob);
     }
   }else{
     clearInterval(renderingJob);
@@ -126,8 +168,9 @@ function updateBack() {
     var element = initialLoad.shift();
     alreadyDone.push(element);
     var existingElement = document.getElementById(element);
-    if(existingElement == null){
+    if(existingElement == null && element && element != ""){
       addTweet(element, "back");
+      clearInterval(renderingBackJob);
     }
   }else{
     clearInterval(renderingBackJob);
@@ -183,9 +226,9 @@ function checkIfTweetsReceived() {
 }
 
 window.onscroll = function() {
-  if(lastElementFromBackjob && distanceFromViewport(lastElementFromBackjob) <= 5000) {
+  if(lastElementFromBackjob && distanceFromViewport(lastElementFromBackjob) <= 1000) {
     clearInterval(renderingBackJob);
-    renderingBackJob = setInterval(updateBack,100);  
+    renderingBackJob = setInterval(updateBack,10);  
   }
 };
 
@@ -194,26 +237,5 @@ window.onload = function () {
 }
 
 </script>
-	</head>
-	<body class="parentbody">
-    <noscript>
-            <p>Ihr Browser unterstützt kein JavaScript - ohne funktioniert die Seite leider nicht.</p>
-    </noscript>
-    <div id="imprint"><a href="about.html" style="text-decoration:none">Über / Impressum / Datenschutzerklärung</a></div>
-    <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
-    <div class="modal__overlay" tabindex="-1" >
-      <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-        <header class="modal__header">
-          <h2 class="modal__title" id="modal-1-title">
-          </h2>
-        </header>
-        <main class="modal__content" id="modal-1-content">
-        </main>
-        <footer class="modal__footer">
-          <button class="modal__btn modal__btn-primary" data-micromodal-close id="modal-1-buttontext"></button>
-        </footer>
-      </div>
-    </div>
-  </div>
 	</body>
 </html>
